@@ -4,14 +4,13 @@ author: "herchu"
 output: html_document
 ---
 
-Summary
--------
+### Summary
 
+It's possible to predict with very high accuracy the quality of weight lifting exercises from data obtained from devices weared by the weightlifter. Using the data-set provided by [Velloso, E. et al.(2013)](http://groupware.les.inf.puc-rio.br/har) and a Random Forest model [Breiman, L. (2001)](https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf) I could predict with 99.2% accuracy the quality of the workout.
 
-Preprocessing
--------------
+### Preprocessing
 
-By studying the provided files I found that the sets contains a large quantity of records with missing values. These comes either as a "NA" string or as blank string. There are other values that are identified as `#DIV/0!` (division by zero error) as well. I processed all of those as NA values.
+By studying the provided files I found that the sets contains a large quantity of records with missing values. These comes either as a `"NA"` string or as blank string. There are other values that are identified as `#DIV/0!` (division by zero error) as well. I processed all of those as NA values.
 
 ```{r echo=FALSE,message=FALSE}
 library(caret)
@@ -33,10 +32,9 @@ ignorecols <- c('X','user_name','raw_timestamp_part_1','raw_timestamp_part_2',
 pmldatanona <- pmldatanona[,!(names(pmldatanona) %in% ignorecols)]
 ```
 
-Creating data sets
-------------------
+### Creating data sets
 
-I created two data-sets (training and testing) both from the `pml-training.csv` file. The idea is to consider the `pml-testing.csv` file as the validating set whose results will be obtained through the course web page. My training and testing data-set consists of an 80/20% each sampling of the pml-training.csv file.
+I created two data-sets (training and testing) both from the `pml-training.csv` file. The idea is to consider the `pml-testing.csv` file as the validating set whose results will be obtained through the course web page. My training and testing data-set consist of an 80/20% each sampling from the `pml-training.csv` file (_hold-out cross validation technique_).
 
 ```{r part,cache=TRUE}
 set.seed(101)
@@ -45,12 +43,11 @@ training = pmldatanona[inTrain,]
 testing = pmldatanona[-inTrain,]
 ```
 
-Model Selection
----------------
+### Model Selection
 
-I've chosen the Random Forest classification method (Breiman, L. (2001)) because its accuracy is well regarded. The resulting model from this algorithm is hard to interpret but, in this problem, given the number of features that are involved any interpretation will be difficult to prove.
+I've chosen the Random Forest classification method [Breiman, L. (2001)](https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf) because its accuracy is well regarded. The resulting model from this algorithm is hard to interpret but, in this problem, given the number of features that are involved any interpretation will be difficult to prove.
 
-Training of the random forest was done using one model. While the caret package let train several models with different parameters and evaluates them before choosing the best of the set, the process time tends to be very large and it's better to start with a simple model and refine them later if needed. The parameter mtry is the number of variables available for splitting at each tree node while training. In [Cutler et al. (2007)](https://www.nescent.org/wg/cart/images/1/1a/HighResRandomForestsandAppendices.pdf) is reported that mtry doesn't seem to affect the correct classification rates so I picked the smallest to speed up the calculations.
+Training of the random forest was done using one model. While the `caret` package let train several models with different parameters and evaluates them before choosing the best of the set, the process time tends to be very large and it's better to start with a simple model and refine them later if needed. The parameter `mtry` is the number of variables available for splitting at each tree node while training. In [Cutler et al. (2007)](https://www.nescent.org/wg/cart/images/1/1a/HighResRandomForestsandAppendices.pdf) is reported that mtry doesn't seem to affect the correct classification rates so I picked the smallest to speed up the calculations.
 
 ```{r model,message=FALSE,cache=TRUE}
 set.seed(107)
@@ -62,27 +59,25 @@ modfit <- train(classe ~. , data=training, method="rf",
 modfit$finalModel
 ```
 
-As shown the out-of-bag error reported for this model is very small.
+As shown the out-of-bag error reported for this model is very small. At this point with the oob error reported it's not worth to tweak the model and risk overfitting.
 
-The following figure shows the variable importance in the resulting model (the 20 most imporant ordered by decreasing imporance). One possible improvement could be run subsequent forests with only these variables.
+The following figure shows the variable importance in the resulting model (the 20 most important ordered by decreasing importance). One possible improvement could be run subsequent forests with only these variables.
 
 ```{r graph, echo=FALSE,cache=TRUE}
 plot(varImp(modfit), top=20)
 ```
 
-Testing
--------
+### Testing
 
-One neat advantage of the Random Forest algorithm is that an extra cross-validation process to report the out of sample is not needed as the model does it by itself during the building process. In the random forest jargon it's called oob (out-of-bag) error. See the documentation from its author [Breiman](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr) for details.
+One neat advantage of the Random Forest algorithm is that _an extra cross-validation process to report the out of sample error is not needed_ as the model does it by itself during the building process. In the random forest jargon it's called oob (out-of-bag) error. Its author, in [Breiman](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr), details how its obtained and why an extra cross-validation is not needed.
 
-Regardless of this, I used the 20% of the original data-set and built a confusion matrix against the predicted values from my model. As expected, the accuracy is `0.9921` which corresponds to the `0.8%` reported by the model (`accuracy = 1 - classif_error`).
+Regardless of this, I used the 20% of the original data-set (the hold-out cross-validation set) and built a confusion matrix against the predicted values from my model. The accuracy of the model with this sampled data is `0.9921` which corresponds nicely to the `0.8%` reported by the model (`accuracy = 1 - classif_error`).
 
 ```{r table,cache=TRUE}
 confusionMatrix(predict(modfit, newdata=testing), testing$classe)
 ```
 
-Result
-------
+### Result
 
 To obtain the answers for the problem I've just predict them using my model.
 
@@ -90,8 +85,7 @@ To obtain the answers for the problem I've just predict them using my model.
 answers <- predict(modfit, newdata=pmlanswers)
 ```
 
-Conclusions
-------------
+### Conclusions
 
 In this analysis I found that it's possible to predict with a very high accuracy (more than 99%) the quality of the workout sportsmen and sportswomen perform by taking measurements of accelerometers placed in their bodies.
 
