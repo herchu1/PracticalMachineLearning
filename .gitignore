@@ -2,6 +2,8 @@
 problem_id*
 todo.txt
 .Rproj.user
+.Rdata
+.Rhistory
 PML-project_cache
 PML-project_files
 README.html
