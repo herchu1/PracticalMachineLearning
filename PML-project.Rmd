@@ -1,0 +1,72 @@
+---
+title: "Practical Machine Learning"
+author: "herchu"
+date: "25 de octubre de 2014"
+output: html_document
+---
+
+Summary
+-------
+
+
+Preprocessing
+-------------
+
+```{r load}
+library(caret)
+pmldata <- read.csv("pml-training.csv", stringsAsFactors=T, na.strings=c("NA","","#DIV/0!"))
+pmlanswers <- read.csv("pml-testing.csv", stringsAsFactors=T, na.strings=c("NA","","#DIV/0!"))
+```
+
+```{r nas}
+min(colSums(is.na(pmldata[,colSums(is.na(pmldata)) > 0])) / nrow(pmldata))
+pmldatanona <- pmldata[,colSums(is.na(pmldata)) == 0]
+```
+
+```{r cols}
+ignorecols <- c('X','user_name','raw_timestamp_part_1','raw_timestamp_part_2',
+                'cvtd_timestamp','new_window','num_window')
+pmldatanona <- pmldatanona[,!(names(pmldatanona) %in% ignorecols)]
+```
+
+Creating data sets
+------------------
+
+```{r part}
+set.seed(101)
+inTrain = createDataPartition(pmldatanona$classe, p = .8)[[1]]
+training = pmldatanona[ inTrain,]
+testing = pmldatanona[-inTrain,]
+```
+
+Model Selection
+---------------
+
+```{r model}
+set.seed(107)
+modfit <- train(classe ~. , data=training, method="rf",
+                tuneGrid=data.frame(mtry=1),
+                trControl=trainControl(method="none"))
+modfit$finalModel
+```
+
+
+```{r graph, echo=FALSE}
+plot(varImp(modfit), top=20)
+```
+
+
+Testing
+-------
+
+```{r table}
+confusionMatrix(predict(modfit, newdata=testing), testing$classe)
+```
+
+Result
+------
+
+```{r result}
+result <- predict(modfit, newdata=pmlanswers)
+```
+
