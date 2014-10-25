@@ -11,7 +11,7 @@ Summary
 Preprocessing
 -------------
 
-By studying the provided files I found that the sets contains a large quantity of records with missing values. These comes either as a "NA" string or as blank string. There are other values that are identified as "#DIV/0!" (division by zero error) as well. I processed all of those as NA values.
+By studying the provided files I found that the sets contains a large quantity of records with missing values. These comes either as a "NA" string or as blank string. There are other values that are identified as `#DIV/0!` (division by zero error) as well. I processed all of those as NA values.
 
 ```{r echo=FALSE,message=FALSE}
 library(caret)
@@ -24,7 +24,7 @@ pmlanswers <- read.csv("pml-testing.csv", stringsAsFactors=T, na.strings=c("NA",
 
 The features that contains NAs provide very few measurements. The feature that contains the least NA values has `r round((min(colSums(is.na(pmldata[,colSums(is.na(pmldata)) > 0])) / nrow(pmldata))) *100)`% of all the values as NA. That's a very high percentage (other feature are even worst) and it's not worth to devise an imputation method for them. My decision was to get rid of those features in the model.
 
-Alongside with the NAs goes some other features. I preferred to build a model that only contains instrument measurements so the prediction model can work in other situations (different users, time of day, etc.) feeded by the same instruments that were used in the aforementioned experiment. The result is a data set of 19,622 observations of 53 variables. All the predictors are numeric except the predicted value 'classe' which is a factor.
+Alongside with the NAs goes some other features. I preferred to build a model that only contains instrument measurements so the prediction model can work in other situations (different users, time of day, etc.) feeded by the same instruments that were used in the aforementioned experiment. The result is a data set of 19,622 observations of 53 variables. All the predictors are numeric except the predicted value `classe` which is a factor.
 
 ```{r cols,cache=TRUE}
 pmldatanona <- pmldata[,colSums(is.na(pmldata)) == 0]
@@ -36,7 +36,7 @@ pmldatanona <- pmldatanona[,!(names(pmldatanona) %in% ignorecols)]
 Creating data sets
 ------------------
 
-I created two data-sets (training and testing) both from the pml-training.csv file. The idea is to consider the pml-testing.csv file as the validating set whose results will be obtained through the course web page. My training and testing data-set consists of an 80/20% each sampling of the pml-training.csv file.
+I created two data-sets (training and testing) both from the `pml-training.csv` file. The idea is to consider the `pml-testing.csv` file as the validating set whose results will be obtained through the course web page. My training and testing data-set consists of an 80/20% each sampling of the pml-training.csv file.
 
 ```{r part,cache=TRUE}
 set.seed(101)
@@ -48,11 +48,11 @@ testing = pmldatanona[-inTrain,]
 Model Selection
 ---------------
 
-I've chosen the Random Forest classification method because its accuracy is well regarded. The resulting model from this algorithm is hard to interpret but, in this problem, given the number of features that are involved any interpretation will be difficult to prove.
+I've chosen the Random Forest classification method (Breiman, L. (2001)) because its accuracy is well regarded. The resulting model from this algorithm is hard to interpret but, in this problem, given the number of features that are involved any interpretation will be difficult to prove.
 
-Training of the random forest was done using one model. While the caret package let train several models with different parameters and evaluates them before choosing the best of the set, the process time tends to be very large and it's better to start with a simple model and refine them later if needed. The parameter mtry is the number of variables available for splitting at each tree node while training. Cutler et al. (2007)  https://www.nescent.org/wg/cart/images/1/1a/HighResRandomForestsandAppendices.pdf reported that mtry doesn't seem to affect the correct classification rates so I picked the smallest to speed up the calculations.
+Training of the random forest was done using one model. While the caret package let train several models with different parameters and evaluates them before choosing the best of the set, the process time tends to be very large and it's better to start with a simple model and refine them later if needed. The parameter mtry is the number of variables available for splitting at each tree node while training. In [Cutler et al. (2007)](https://www.nescent.org/wg/cart/images/1/1a/HighResRandomForestsandAppendices.pdf) is reported that mtry doesn't seem to affect the correct classification rates so I picked the smallest to speed up the calculations.
 
-```{r model,cache=TRUE,message=FALSE}
+```{r model,message=FALSE,cache=TRUE}
 set.seed(107)
 modfit <- train(classe ~. , data=training, method="rf",
                 tuneGrid=data.frame(mtry=1),
@@ -64,16 +64,18 @@ modfit$finalModel
 
 As shown the out-of-bag error reported for this model is very small.
 
-```{r graph, echo=FALSE}
+The following figure shows the variable importance in the resulting model (the 20 most imporant ordered by decreasing imporance). One possible improvement could be run subsequent forests with only these variables.
+
+```{r graph, echo=FALSE,cache=TRUE}
 plot(varImp(modfit), top=20)
 ```
 
 Testing
 -------
 
-One neat advantage of the Random Forest algorithm is that an extra cross-validation process to report the out of sample is not needed as the model does it by itself during the building process. In the random forest jargon it's called oob (out-of-bag) error. See https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr for details.
+One neat advantage of the Random Forest algorithm is that an extra cross-validation process to report the out of sample is not needed as the model does it by itself during the building process. In the random forest jargon it's called oob (out-of-bag) error. See the documentation from its author [Breiman](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr) for details.
 
-Regardless of this, I used the 20% of the original data-set and built a confusion matrix against the predicted values from my model. As expected, the accuracy is 0.9921 which corresponds to the 0.8% reported by the model (accuracy = 1 - oob_error).
+Regardless of this, I used the 20% of the original data-set and built a confusion matrix against the predicted values from my model. As expected, the accuracy is `0.9921` which corresponds to the `0.8%` reported by the model (`accuracy = 1 - classif_error`).
 
 ```{r table,cache=TRUE}
 confusionMatrix(predict(modfit, newdata=testing), testing$classe)
@@ -84,7 +86,15 @@ Result
 
 To obtain the answers for the problem I've just predict them using my model.
 
-```{r result}
+```{r result, cache=TRUE, message=FALSE}
 answers <- predict(modfit, newdata=pmlanswers)
 ```
 
+Conclusions
+------------
+
+In this analysis I found that it's possible to predict with a very high accuracy (more than 99%) the quality of the workout sportsmen and sportswomen perform by taking measurements of accelerometers placed in their bodies.
+
+While the Random Forest algorithm takes a long time to build the model, once it's done the prediction phase is extremely fast. The model could be built beforehand and embedded into a device with several sensors for collecting the data. This device only need to capture the measurements and predict a result.
+
+It's not far fetched to imagine that in the near future we'll see an automated personal trainer reporting how the exercises are performed in real-time through visual or auditive feedback.
