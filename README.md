@@ -11,12 +11,12 @@ Since github tends to show the html __source__ instead of rendering the content 
 So to read the analysis click on: 
 http://htmlpreview.github.com/?https://github.com/herchu1/PracticalMachineLearning/blob/master/PML-project.html
 
-This project refers to [Velloso, E. et al.(2013)][^1] and [Breiman, L. (2001)][^2].
+This project refers to Exercise [#Velloso:2003] and Random Forests [#Breiman:2001].
 
-#### References
+#### Bibliography
 
-[^1]: Velloso Universidade do Rio. http://groupware.les.inf.puc-rio.br/har
+[#Velloso:2003]: Velloso, E. et al.(2013). http://groupware.les.inf.puc-rio.br/har
 
-[^2]: Random Forests, Breiman. https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf
+[#Breiman:2001]: Breiman, L. (2001) https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf
 
 
