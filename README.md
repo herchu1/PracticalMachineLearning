@@ -11,12 +11,13 @@ Since github tends to show the html __source__ instead of rendering the content 
 So to read the analysis click on: 
 http://htmlpreview.github.com/?https://github.com/herchu1/PracticalMachineLearning/blob/master/PML-project.html
 
-This project refers to Exercise [#Velloso:2003] and Random Forests [#Breiman:2001].
+This project refers to _Qualitative Activity Recognition of Weight Lifting Exercises_ [#Velloso2003] and _Random Forests_ [#Breiman2001].
+
 
 #### Bibliography
 
-[#Velloso:2003]: Velloso, E. et al.(2013). http://groupware.les.inf.puc-rio.br/har
+[#Velloso2003]
+Velloso, E. et al.(2013). http://groupware.les.inf.puc-rio.br/work.jsf?p1=11201
 
-[#Breiman:2001]: Breiman, L. (2001) https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf
-
-
+[#Breiman2001]
+Breiman, L. (2001) https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf
