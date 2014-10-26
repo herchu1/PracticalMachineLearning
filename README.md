@@ -15,8 +15,8 @@ This project refers to [Velloso, E. et al.(2013)][^1] and [Breiman, L. (2001)][^
 
 #### References
 
-[^1]: http://groupware.les.inf.puc-rio.br/har
+[^1]: Velloso Universidade do Rio. http://groupware.les.inf.puc-rio.br/har
 
-[^2]: https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf
+[^2]: Random Forests, Breiman. https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf
 
 
