@@ -6,9 +6,13 @@ output: html_document
 
 ### Summary
 
-It's possible to predict with very high accuracy the quality of weight lifting exercises from data obtained from devices weared by the weightlifter. Using the data-set provided by [Velloso, E. et al.(2013)](http://groupware.les.inf.puc-rio.br/har) and a Random Forest model [Breiman, L. (2001)](https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf) I could predict with 99.2% accuracy the quality of the workout.
+It's possible to predict with very high accuracy the quality of weight lifting exercises from data obtained from devices weared by the weightlifter. Using the data-set provided by [Velloso, E. et al.(2013)](http://groupware.les.inf.puc-rio.br/work.jsf?p1=11201) and a Random Forest model [Breiman, L.(2001)](https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf) I could predict with 99.2% accuracy the quality of the workout.
 
 ### Preprocessing
+
+In this analysis, an assignment for Coursera's Practical Machine Learning course, two sets of data were used. Both sets comes from Velloso et al., and one of them is a 20 records sample that is used for assignment grading.
+
+The data-set consists of weareable instrument measures collected from participants of an experiment where the subjects perform a workout and the quality of the exercise. The quality was recorded as 5 letters being "A" when the workout was perfomed correctly and "B" to "E" common mistakes. The data-set contains other variables like an index, the subject name, date and time of the observation.
 
 By studying the provided files I found that the sets contains a large quantity of records with missing values. These comes either as a `"NA"` string or as blank string. There are other values that are identified as `#DIV/0!` (division by zero error) as well. I processed all of those as NA values.
 
@@ -23,7 +27,7 @@ pmlanswers <- read.csv("pml-testing.csv", stringsAsFactors=T, na.strings=c("NA",
 
 The features that contains NAs provide very few measurements. The feature that contains the least NA values has `r round((min(colSums(is.na(pmldata[,colSums(is.na(pmldata)) > 0])) / nrow(pmldata))) *100)`% of all the values as NA. That's a very high percentage (other feature are even worst) and it's not worth to devise an imputation method for them. My decision was to get rid of those features in the model.
 
-Alongside with the NAs goes some other features. I preferred to build a model that only contains instrument measurements so the prediction model can work in other situations (different users, time of day, etc.) feeded by the same instruments that were used in the aforementioned experiment. The result is a data set of 19,622 observations of 53 variables. All the predictors are numeric except the predicted value `classe` which is a factor.
+Alongside with the NAs go some other features. I preferred to build a model that only contains instrument measurements so the prediction model can work in other situations (different users, time of day, etc.) feeded by the same instruments that were used in the aforementioned experiment. The result is a data set of 19,622 observations of 53 variables. All the predictors are numeric except the predicted value `classe` which is a factor.
 
 ```{r cols}
 pmldatanona <- pmldata[,colSums(is.na(pmldata)) == 0]
@@ -69,7 +73,7 @@ plot(varImp(modfit), top=20)
 
 ### Testing
 
-One neat advantage of the Random Forest algorithm is that _an extra cross-validation process to report the out of sample error is not needed_ as the model does it by itself during the building process. In the random forest jargon it's called oob (out-of-bag) error. Its author, in [Breiman](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr), details how its obtained and why an extra cross-validation is not needed.
+One neat advantage of the Random Forest algorithm is that an extra cross-validation process to report the out of sample error is not needed as the model does it by itself during the building process. In the random forest jargon it's called oob (out-of-bag) error. Its author, see [Breiman](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr), details how it's obtained and why with RF the __extra cross-validation step is not needed__.
 
 Regardless of this, I used the 20% of the original data-set (the hold-out cross-validation set) and built a confusion matrix against the predicted values from my model. The accuracy of the model with this sampled data is `0.9921` which corresponds nicely to the `0.8%` reported by the model (`accuracy = 1 - classif_error`).
 
@@ -77,13 +81,15 @@ Regardless of this, I used the 20% of the original data-set (the hold-out cross-
 confusionMatrix(predict(modfit, newdata=testing), testing$classe)
 ```
 
-### Result
+### Assignment Results
 
-To obtain the answers for the problem I've just predict them using my model.
+To obtain the answers for the assignment I've just predict them using my model.
 
 ```{r result, message=FALSE}
 answers <- predict(modfit, newdata=pmlanswers)
 ```
+
+The results are ommited in this document for obvious reasons but I can confirm that with my model I've got 100% accuracy.
 
 ### Conclusions
 

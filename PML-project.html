@@ -59,10 +59,12 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <div id="summary" class="section level3">
 <h3>Summary</h3>
-<p>It’s possible to predict with very high accuracy the quality of weight lifting exercises from data obtained from devices weared by the weightlifter. Using the data-set provided by <a href="http://groupware.les.inf.puc-rio.br/har">Velloso, E. et al.(2013)</a> and a Random Forest model <a href="https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf">Breiman, L. (2001)</a> I could predict with 99.2% accuracy the quality of the workout.</p>
+<p>It’s possible to predict with very high accuracy the quality of weight lifting exercises from data obtained from devices weared by the weightlifter. Using the data-set provided by <a href="http://groupware.les.inf.puc-rio.br/work.jsf?p1=11201">Velloso, E. et al.(2013)</a> and a Random Forest model <a href="https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf">Breiman, L.(2001)</a> I could predict with 99.2% accuracy the quality of the workout.</p>
 </div>
 <div id="preprocessing" class="section level3">
 <h3>Preprocessing</h3>
+<p>In this analysis, an assignment for Coursera’s Practical Machine Learning course, two sets of data were used. Both sets comes from Velloso et al., and one of them is a 20 records sample that is used for assignment grading.</p>
+<p>The data-set consists of weareable instrument measures collected from participants of an experiment where the subjects perform a workout and the quality of the exercise. The quality was recorded as 5 letters being “A” when the workout was perfomed correctly and “B” to “E” common mistakes. The data-set contains other variables like an index, the subject name, date and time of the observation.</p>
 <p>By studying the provided files I found that the sets contains a large quantity of records with missing values. These comes either as a <code>&quot;NA&quot;</code> string or as blank string. There are other values that are identified as <code>#DIV/0!</code> (division by zero error) as well. I processed all of those as NA values.</p>
 <pre class="r"><code>pmldata &lt;- read.csv(&quot;pml-training.csv&quot;, stringsAsFactors=T, na.strings=c(&quot;NA&quot;,&quot;&quot;,&quot;#DIV/0!&quot;))
 pmlanswers &lt;- read.csv(&quot;pml-testing.csv&quot;, stringsAsFactors=T, na.strings=c(&quot;NA&quot;,&quot;&quot;,&quot;#DIV/0!&quot;))</code></pre>
@@ -111,7 +113,7 @@ modfit &lt;- train(classe ~. , data=training, method=&quot;rf&quot;,
 </div>
 <div id="testing" class="section level3">
 <h3>Testing</h3>
-<p>One neat advantage of the Random Forest algorithm is that <em>an extra cross-validation process to report the out of sample error is not needed</em> as the model does it by itself during the building process. In the random forest jargon it’s called oob (out-of-bag) error. Its author, in <a href="https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr">Breiman</a>, details how its obtained and why an extra cross-validation is not needed.</p>
+<p>One neat advantage of the Random Forest algorithm is that an extra cross-validation process to report the out of sample error is not needed as the model does it by itself during the building process. In the random forest jargon it’s called oob (out-of-bag) error. Its author, see <a href="https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr">Breiman</a>, details how it’s obtained and why with RF the <strong>extra cross-validation step is not needed</strong>.</p>
 <p>Regardless of this, I used the 20% of the original data-set (the hold-out cross-validation set) and built a confusion matrix against the predicted values from my model. The accuracy of the model with this sampled data is <code>0.9921</code> which corresponds nicely to the <code>0.8%</code> reported by the model (<code>accuracy = 1 - classif_error</code>).</p>
 <pre class="r"><code>confusionMatrix(predict(modfit, newdata=testing), testing$classe)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
@@ -146,10 +148,11 @@ modfit &lt;- train(classe ~. , data=training, method=&quot;rf&quot;,
 ## Detection Prevalence   0.2852   0.1947   0.1756   0.1606   0.1838
 ## Balanced Accuracy      0.9988   0.9951   0.9904   0.9890   0.9992</code></pre>
 </div>
-<div id="result" class="section level3">
-<h3>Result</h3>
-<p>To obtain the answers for the problem I’ve just predict them using my model.</p>
+<div id="assignment-results" class="section level3">
+<h3>Assignment Results</h3>
+<p>To obtain the answers for the assignment I’ve just predict them using my model.</p>
 <pre class="r"><code>answers &lt;- predict(modfit, newdata=pmlanswers)</code></pre>
+<p>The results are ommited in this document for obvious reasons but I can confirm that with my model I’ve got 100% accuracy.</p>
 </div>
 <div id="conclusions" class="section level3">
 <h3>Conclusions</h3>
